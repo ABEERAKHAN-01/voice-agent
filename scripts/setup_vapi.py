@@ -41,7 +41,7 @@ def create_assistant() -> str:
             "messages": [{"role": "system", "content": SYSTEM_PROMPT}],
             "tools": VAPI_TOOLS,
         },
-        "voice": {"provider": "11labs", "voiceId": "rachel"},
+        "voice": {"provider": "vapi", "voiceId": "Elliot"},
         "transcriber": {"provider": "deepgram", "model": "nova-2", "language": "en-US"},
         "firstMessage": "Hi, thanks for calling — this is Riley. Am I helping you register as a new patient today?",
         "serverUrl": settings.VAPI_SERVER_URL,
@@ -50,6 +50,11 @@ def create_assistant() -> str:
         "silenceTimeoutSeconds": 20,
     }
     resp = httpx.post(f"{VAPI_BASE}/assistant", headers=HEADERS, json=payload, timeout=30)
+    if resp.status_code != 200:
+        print("VAPI ERROR:")
+        print(resp.status_code)
+        print(resp.text)
+        exit()
     resp.raise_for_status()
     data = resp.json()
     print(f"Created assistant: {data['id']}")
